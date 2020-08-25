@@ -11,6 +11,10 @@ A webpack plugin to retry loading of async chunks that failed to load
 
 <img width="827" alt="screenshot 2018-10-24 at 21 47 39" src="https://user-images.githubusercontent.com/6425649/47435175-9c4c0100-d7d6-11e8-8519-6f46088e649f.png">
 
+## Installing
+
+`yarn add https://github.com/randy-ang/webpack-retry-chunk-load-plugin`
+
 ## Usage
 
 ```javascript
@@ -20,7 +24,7 @@ const { RetryChunkLoadPlugin } = require('webpack-retry-chunk-load-plugin');
 plugins: [
   new RetryChunkLoadPlugin({
     // optional stringified function to get the cache busting query string appended to the script src
-    // if not set will default to appending the string `?cache-bust=true`
+    // if not set will default to appending the string `?retry-attempt=<retries-done>`
     cacheBust: `function() {
       return Date.now();
     }`,
@@ -31,7 +35,9 @@ plugins: [
     chunks: ['chunkName'],
     // optional code to be executed in the browser context if after all retries chunk is not loaded.
     // if not set - nothing will happen and error will be returned to the chunk loader.
-    lastResortScript: "window.location.href='/500.html';"
+    lastResortScript: "window.location.href='/500.html';",
+    // timeout (in milliseconds) before retrying to load chunk, defaults to 0
+    delay: 1000
   })
 ];
 ```

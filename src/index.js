@@ -1,5 +1,3 @@
-const prettier = require('prettier');
-
 const pluginName = 'RetryChunkLoadPlugin';
 
 class RetryChunkLoadPlugin {
@@ -28,9 +26,9 @@ class RetryChunkLoadPlugin {
           const getCacheBustString = () =>
             this.options.cacheBust
               ? `
-            (${this.options.cacheBust})();
+            (${this.options.cacheBust})() + '&';
           `
-              : '"cache-bust=true"';
+              : '""';
 
           const maxRetryValueFromOptions = Number(this.options.maxRetries);
           const maxRetries =
@@ -46,7 +44,7 @@ class RetryChunkLoadPlugin {
 
             var script = document.createElement('script');
             var retryAttempt = ${maxRetries} - retries + 1;
-            var retryAttemptString = '&retry-attempt=' + retryAttempt;
+            var retryAttemptString = 'retry-attempt=' + retryAttempt;
             var onScriptComplete;
             ${
               jsonpScriptType
@@ -73,7 +71,8 @@ class RetryChunkLoadPlugin {
                     error.message = 'Loading chunk ' + chunkId + ' failed after ${maxRetries} retries.\\n(' + errorType + ': ' + realSrc + ')';
                     error.name = 'ChunkLoadError';
                     error.type = errorType;
-                    error.request = realSrc;${
+                    error.request = realSrc;
+                    ${
                       this.options.lastResortScript
                         ? this.options.lastResortScript
                         : ''
@@ -81,9 +80,11 @@ class RetryChunkLoadPlugin {
                     chunk[1](error);
                     installedChunks[chunkId] = undefined;
                   } else {
-                    var cacheBust = ${getCacheBustString()} + retryAttemptString;
-                    var retryScript = loadScript(jsonpScriptSrc(chunkId) + '?' + cacheBust, (retries-1));
-                    document.head.appendChild(retryScript);
+                    setTimeout(() => {
+                      var cacheBust = ${getCacheBustString()} + retryAttemptString;
+                      var retryScript = loadScript(jsonpScriptSrc(chunkId) + '?' + cacheBust, (retries-1));
+                      document.head.appendChild(retryScript);
+                    }, ${this.options.delay || 0})
                   }
                 } else {
                   installedChunks[chunkId] = undefined;
@@ -106,10 +107,7 @@ class RetryChunkLoadPlugin {
             this.options.chunks.includes(currentChunkName);
           const script = addRetryCode ? scriptWithRetry : source;
 
-          return prettier.format(script, {
-            singleQuote: true,
-            parser: 'babel'
-          });
+          return script;
         });
       }
     });
