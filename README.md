@@ -13,7 +13,7 @@ A webpack plugin to retry loading of async chunks that failed to load
 
 ## Installing
 
-`yarn add https://github.com/randy-ang/webpack-retry-chunk-load-plugin`
+`yarn add @randy-ang/webpack-retry-chunk-load-plugin`
 
 ## Usage
 
