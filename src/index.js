@@ -1,5 +1,3 @@
-const prettier = require('prettier');
-
 const pluginName = 'RetryChunkLoadPlugin';
 
 class RetryChunkLoadPlugin {
@@ -106,10 +104,7 @@ class RetryChunkLoadPlugin {
             this.options.chunks.includes(currentChunkName);
           const script = addRetryCode ? scriptWithRetry : source;
 
-          return prettier.format(script, {
-            singleQuote: true,
-            parser: 'babel'
-          });
+          return script;
         });
       }
     });
